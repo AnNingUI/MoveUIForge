@@ -40,7 +40,7 @@ public class ExampleSetEffect implements SetEffect {
     @Override
     public void landEffect(LivingEntity entity, double distance, BlockState landingBlock, BlockPos pos) {
         if (distance > 5 && entity.isSprinting()){
-            entity.level().explode(entity,entity.getX(),entity.getY(),entity.getZ(),10,false, Level.ExplosionInteraction.MOB);
+            entity.level().explode(entity,entity.getX(),entity.getY(),entity.getZ(),10,false, Level.ExplosionInteraction.NONE);
         }
     }
 

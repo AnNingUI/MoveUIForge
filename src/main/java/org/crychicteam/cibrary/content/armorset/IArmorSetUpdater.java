@@ -12,9 +12,9 @@ import org.crychicteam.cibrary.Cibrary;
 import java.util.Map;
 import java.util.Objects;
 
-public class ArmorSetUpdater extends ArmorSetChecker {
+public interface IArmorSetUpdater extends IArmorSetChecker {
 
-    protected boolean shouldUpdateMobEffects(LivingEntity entity) {
+    default boolean shouldUpdateMobEffects(LivingEntity entity) {
         if (!(entity instanceof Player player)) return false;
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
         Map<MobEffect, Integer> effects = armorSet.getEffects();
@@ -27,7 +27,7 @@ public class ArmorSetUpdater extends ArmorSetChecker {
         return false;
     }
 
-    public void applyMobEffects(LivingEntity entity) {
+    default void applyMobEffects(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         if (shouldUpdateMobEffects(player)) {
             ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
@@ -40,7 +40,7 @@ public class ArmorSetUpdater extends ArmorSetChecker {
         }
     }
 
-    public void applyAttributes(LivingEntity entity) {
+    default void applyAttributes(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
         Multimap<Attribute, AttributeModifier> attributes = armorSet.getAttributes();
@@ -49,7 +49,7 @@ public class ArmorSetUpdater extends ArmorSetChecker {
         }
     }
 
-    public void removeEffects(LivingEntity entity) {
+    default void removeEffects(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
         Map<MobEffect, Integer> effects = armorSet.getEffects();
@@ -58,7 +58,7 @@ public class ArmorSetUpdater extends ArmorSetChecker {
         }
     }
 
-    public void removeAttributes(LivingEntity entity) {
+    default void removeAttributes(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
         Multimap<Attribute, AttributeModifier> attributes = armorSet.getAttributes();
@@ -67,12 +67,12 @@ public class ArmorSetUpdater extends ArmorSetChecker {
         }
     }
 
-    public void applyEffectsAndAttributes(LivingEntity entity) {
+    default void applyEffectsAndAttributes(LivingEntity entity) {
         applyMobEffects(entity);
         applyAttributes(entity);
     }
 
-    public void removeEffectsAndAttributes(LivingEntity entity) {
+    default void removeEffectsAndAttributes(LivingEntity entity) {
         removeEffects(entity);
         removeAttributes(entity);
     }

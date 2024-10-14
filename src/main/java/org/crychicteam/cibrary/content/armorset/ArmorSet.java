@@ -4,15 +4,18 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.crychicteam.cibrary.content.armorset.defaults.DefaultSetEffect;
+import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 
 import java.util.*;
 
-public class ArmorSet extends ArmorSetUpdater {
+public class ArmorSet implements IArmorSetUpdater,IArmorSetAttackHandler,IArmorSetChecker {
     public static final Item EMPTY_SLOT_MARKER = null;
 
     public String identifier;
@@ -124,5 +127,20 @@ public class ArmorSet extends ArmorSetUpdater {
     public void addAttribute(Attribute attribute, String name, double amount, AttributeModifier.Operation operation) {
         AttributeModifier modifier = new AttributeModifier(UUID.randomUUID(), name, amount, operation);
         attributes.put(attribute, modifier);
+    }
+
+    @Override
+    public boolean matches(LivingEntity entity) {
+        for (Map.Entry<EquipmentSlot, Set<Item>> entry : equipmentItems.entrySet()) {
+            ItemStack equippedItem = entity.getItemBySlot(entry.getKey());
+            if (entry.getValue().contains(EMPTY_SLOT_MARKER)) {
+                if (!equippedItem.isEmpty()) {
+                    return false;
+                }
+            } else if (!entry.getValue().isEmpty() && (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem()))) {
+                return false;
+            }
+        }
+        return CuriosIntegration.matchesCurioRequirements(entity, curioItems);
     }
 }

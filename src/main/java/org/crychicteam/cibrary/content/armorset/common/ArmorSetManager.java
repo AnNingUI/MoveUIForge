@@ -23,9 +23,6 @@ public class ArmorSetManager extends ArmorSetUpdater {
     }
 
     public ArmorSet getActiveArmorSet(Player player) {
-        if (player == null) {
-            return null;
-        }
         return player.getCapability(ArmorSetCapability.ARMOR_SET_CAPABILITY)
                 .map(IArmorSetCapability::getActiveSet)
                 .orElse(defaultArmorSet);

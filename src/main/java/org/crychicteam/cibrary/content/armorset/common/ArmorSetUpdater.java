@@ -28,10 +28,10 @@ public class ArmorSetUpdater extends ArmorSetRegistry {
                     if (currentSet != null) {
                         removeArmorSetEffect(player, currentSet);
                     }
+                    armorSetCap.setActiveSet(newMatchedSet);
                     if (newMatchedSet != null) {
                         applyArmorSetEffect(player, newMatchedSet);
                     }
-                    armorSetCap.setActiveSet(newMatchedSet);
                     CibraryNetworkHandler.sendArmorSetSync((ServerPlayer) player, armorSetCap);
                 }
             });

@@ -3,7 +3,6 @@ package org.crychicteam.cibrary.content.armorset;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.crychicteam.cibrary.Cibrary;
@@ -12,28 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ArmorSetChecker extends ArmorSetAttackHandler {
+public interface IArmorSetChecker {
 
-    public boolean matches(LivingEntity entity) {
-        if (!(entity instanceof Player player)) return false;
-        ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(player);
-        Map<EquipmentSlot, Set<Item>> equipmentItems = armorSet.getEquipmentItems();
-        Map<Item, Integer> curioItems = armorSet.getCurioItems();
+    boolean matches(LivingEntity entity);
 
-        for (Map.Entry<EquipmentSlot, Set<Item>> entry : equipmentItems.entrySet()) {
-            ItemStack equippedItem = entity.getItemBySlot(entry.getKey());
-            if (entry.getValue().contains(ArmorSet.EMPTY_SLOT_MARKER)) {
-                if (!equippedItem.isEmpty()) {
-                    return false;
-                }
-            } else if (!entry.getValue().isEmpty() && (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem()))) {
-                return false;
-            }
-        }
-        return CuriosIntegration.matchesCurioRequirements(entity, curioItems);
-    }
-
-    public Map<EquipmentSlot, ItemStack> getEquippedItems(ServerPlayer entity) {
+    default Map<EquipmentSlot, ItemStack> getEquippedItems(ServerPlayer entity) {
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(entity);
         return getEquipmentSlotItemStackMap(entity, armorSet.getEquipmentItems());
     }
@@ -50,7 +32,7 @@ public class ArmorSetChecker extends ArmorSetAttackHandler {
         return equippedItems;
     }
 
-    protected List<ItemStack> getEquippedCurioItems(ServerPlayer entity) {
+    default List<ItemStack> getEquippedCurioItems(ServerPlayer entity) {
         ArmorSet armorSet = Cibrary.ARMOR_SET_MANAGER.getActiveArmorSet(entity);
         return getItemStacks(entity, armorSet.getCurioItems());
     }
@@ -69,7 +51,7 @@ public class ArmorSetChecker extends ArmorSetAttackHandler {
         return equippedCurios;
     }
 
-    protected Map<EquipmentSlot, ItemStack> getAllEquippedItems(ServerPlayer entity) {
+    default Map<EquipmentSlot, ItemStack> getAllEquippedItems(ServerPlayer entity) {
         Map<EquipmentSlot, ItemStack> allEquipped = getEquippedItems(entity);
         List<ItemStack> curios = getEquippedCurioItems(entity);
         if (!curios.isEmpty()) {
