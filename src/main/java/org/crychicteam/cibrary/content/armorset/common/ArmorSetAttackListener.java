@@ -15,6 +15,10 @@ import org.crychicteam.cibrary.content.armorset.ArmorSet;
 
 import java.util.function.BiConsumer;
 
+/**
+ * This class handle the Damage logic for armor sets.
+ * @author M1hono
+ */
 public class ArmorSetAttackListener implements AttackListener {
 
     private final ArmorSetManager armorSetManager;

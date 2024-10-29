@@ -11,6 +11,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetManager;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
@@ -24,7 +25,7 @@ import java.util.Set;
 import static org.crychicteam.cibrary.content.events.common.ArmorSetHandler.syncArmorSet;
 
 public class SetEffectHandler {
-    private final ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
+    private final ArmorSetManager armorSetManager = Cibrary.ARMOR_SET_MANAGER;
 
     @SubscribeEvent
     public void onEntityFinishUsingItem(LivingEntityUseItemEvent.Finish event) {

@@ -11,6 +11,10 @@ import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetManager;
 import org.crychicteam.cibrary.content.armorset.capability.IArmorSetCapability;
 
+/**
+ * Sync the armor set for client players.
+ *  @author Mihono
+ */
 @SerialClass
 public class ArmorSetSyncPacket extends SerialPacketBase {
     @SerialClass.SerialField
@@ -20,7 +24,7 @@ public class ArmorSetSyncPacket extends SerialPacketBase {
 
     public ArmorSetSyncPacket(IArmorSetCapability cap) {
         ArmorSet activeSet = cap.getActiveSet();
-        this.activeSetIdentifier = activeSet != null ? activeSet.getIdentifier() : "";
+        this.activeSetIdentifier = activeSet != null ? activeSet.getIdentifier().toString() : "";
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ArmorSetSyncPacket extends SerialPacketBase {
         if (clientPlayer != null) {
             clientPlayer.getCapability(ArmorSetCapability.ARMOR_SET_CAPABILITY).ifPresent(cap -> {
                 if (!activeSetIdentifier.isEmpty()) {
-                    ArmorSet activeSet = ArmorSetManager.getInstance().getArmorSetByIdentifier(activeSetIdentifier);
+                    ArmorSet activeSet = Cibrary.ARMOR_SET_MANAGER.getArmorSetByIdentifier(activeSetIdentifier);
                     cap.setActiveSet(activeSet);
                 } else {
                     cap.setActiveSet(Cibrary.ARMOR_SET_MANAGER.getDefaultArmorSet());

@@ -12,12 +12,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
-import org.crychicteam.cibrary.content.armorset.SetEffect;
+import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
-import org.crychicteam.cibrary.content.armorset.capability.IArmorSetCapability;
 import org.crychicteam.cibrary.content.event.ItemHurtEffectResult;
 
-public class ExampleSetEffect implements SetEffect {
+public class ExampleSetEffect implements ISetEffect {
     @Override
     public void applyEffect(LivingEntity entity) {
         if (entity.level() instanceof ServerLevel level) {

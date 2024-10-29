@@ -3,13 +3,16 @@ package org.crychicteam.cibrary.content.armorset.integration;
 import dev.xkmc.l2damagetracker.contents.attack.AttackCache;
 import dev.xkmc.l2damagetracker.contents.attack.CreateSourceEvent;
 import dev.xkmc.l2damagetracker.contents.attack.PlayerAttackCache;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
-import org.crychicteam.cibrary.content.armorset.SetEffect;
+import org.crychicteam.cibrary.content.armorset.ISetEffect;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -38,10 +41,10 @@ public class KubeJSArmorSet extends ArmorSet {
     private BiConsumer<AttackCache, ItemStack> targetDamageFinalizedConsumer = (cache, weapon) -> {};
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.identifier = ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID, identifier));
     }
 
-    public void setEffect(SetEffect effect) {
+    public void setEffect(ISetEffect effect) {
         this.effect = effect;
     }
 

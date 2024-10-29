@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import org.crychicteam.cibrary.content.event.ItemHurtEffectResult;
 import org.crychicteam.cibrary.content.event.StandOnFluidEvent;
 
-public interface SetEffect {
+public interface ISetEffect {
     /**
      * Trigger when Apply this kind of  Armor Set.
      * @param entity

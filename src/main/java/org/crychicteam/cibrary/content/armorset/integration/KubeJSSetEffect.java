@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.ItemStackedOnOtherEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
-import org.crychicteam.cibrary.content.armorset.SetEffect;
+import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.event.ItemHurtEffectResult;
 import org.crychicteam.cibrary.content.event.StandOnFluidEvent;
 
@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class KubeJSSetEffect implements SetEffect {
+public class KubeJSSetEffect implements ISetEffect {
     private static String identifier;
     private Consumer<LivingEntity> applyEffectConsumer = entity -> {};
     private Consumer<LivingEntity> removeEffectConsumer = entity -> {};

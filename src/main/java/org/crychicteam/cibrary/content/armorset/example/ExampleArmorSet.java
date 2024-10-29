@@ -3,10 +3,10 @@ package org.crychicteam.cibrary.content.armorset.example;
 import dev.xkmc.l2damagetracker.contents.attack.PlayerAttackCache;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
-import org.crychicteam.cibrary.content.armorset.SetEffect;
+import org.crychicteam.cibrary.content.armorset.ISetEffect;
 
 public class ExampleArmorSet extends ArmorSet {
-    public ExampleArmorSet(String identifier, SetEffect effect) {
+    public ExampleArmorSet(String identifier, ISetEffect effect) {
         super(identifier, effect);
     }
 

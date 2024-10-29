@@ -124,7 +124,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability, INBTSeria
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         if (activeSet != null) {
-            nbt.putString("activeSet", activeSet.getIdentifier());
+            nbt.putString("activeSet", activeSet.getIdentifier().toString());
             nbt.putString("state", activeSet.getState().name());
             nbt.putString("skillState", activeSet.getSkillState());
         }

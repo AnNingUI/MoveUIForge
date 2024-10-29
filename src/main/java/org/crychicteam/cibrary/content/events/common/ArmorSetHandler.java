@@ -9,13 +9,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetManager;
 import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 
 public class ArmorSetHandler {
-    private final ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
+    private final ArmorSetManager armorSetManager = Cibrary.ARMOR_SET_MANAGER;
 
     @SubscribeEvent
     public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
