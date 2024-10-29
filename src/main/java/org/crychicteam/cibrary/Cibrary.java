@@ -3,6 +3,7 @@ package org.crychicteam.cibrary;
 import com.mojang.logging.LogUtils;
 import dev.xkmc.l2damagetracker.contents.attack.AttackEventHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -12,7 +13,6 @@ import org.crychicteam.cibrary.api.registry.armorset.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetAttackListener;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetManager;
-import org.crychicteam.cibrary.content.armorset.example.ArmorSetRegistryExample;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 import org.crychicteam.cibrary.content.events.common.ArmorSetHandler;
 import org.crychicteam.cibrary.content.events.common.SetEffectHandler;
@@ -32,11 +32,10 @@ public class Cibrary
 		FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
 		IEventBus bus = ctx.getModEventBus();
 		bus.addListener(this::onCommonSetup);
-		bus.addListener(this::initializeArmorSets);
+		bus.addListener(EventPriority.LOWEST, this::initializeArmorSets);
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new ArmorSetHandler());
 		MinecraftForge.EVENT_BUS.register(new SetEffectHandler());
-
 
 		if (ModList.get().isLoaded("curios")) {
 			MinecraftForge.EVENT_BUS.register(new CuriosIntegration());
@@ -44,8 +43,6 @@ public class Cibrary
 
 		AttackEventHandler.register(4000, new ArmorSetAttackListener(ARMOR_SET_MANAGER));
 		bus.addListener(ArmorSetCapability::register);
-
-		ArmorSetRegistryExample.init();
 	}
 
 	private void initializeArmorSets(FMLCommonSetupEvent event) {
