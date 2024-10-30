@@ -40,9 +40,9 @@ public class KubeJSArmorSet extends ArmorSet {
     private BiConsumer<AttackCache, ItemStack> attackerDamageFinalizedConsumer = (cache, weapon) -> {};
     private BiConsumer<AttackCache, ItemStack> targetDamageFinalizedConsumer = (cache, weapon) -> {};
 
-    public void setIdentifier(String identifier) {
-        this.identifier = ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID, identifier));
-    }
+//    public void setIdentifier(String identifier) {
+//        this.identifier = ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID, identifier));
+//    }
 
     public void setEffect(ISetEffect effect) {
         this.effect = effect;

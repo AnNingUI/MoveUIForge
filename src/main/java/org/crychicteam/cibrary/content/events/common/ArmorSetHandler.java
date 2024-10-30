@@ -20,7 +20,7 @@ public class ArmorSetHandler {
 
     @SubscribeEvent
     public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-        armorSetManager.updateEntitySetEffect(event.getEntity());
+        armorSetManager.updateEntityISetEffect(event.getEntity());
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             syncArmorSet(serverPlayer);
         }
@@ -51,7 +51,7 @@ public class ArmorSetHandler {
                 newCap.setActiveSet(oldCap.getActiveSet());
                 newCap.setState(oldCap.getState());
                 newCap.setSkillState(oldCap.getSkillState());
-                armorSetManager.updateEntitySetEffect(newPlayer);
+                armorSetManager.updateEntityISetEffect(newPlayer);
                 if (newPlayer instanceof ServerPlayer serverPlayer) {
                     syncArmorSet(serverPlayer);
                 }

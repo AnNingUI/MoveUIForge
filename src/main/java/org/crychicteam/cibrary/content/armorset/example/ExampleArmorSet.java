@@ -6,8 +6,8 @@ import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.ISetEffect;
 
 public class ExampleArmorSet extends ArmorSet {
-    public ExampleArmorSet(String identifier, ISetEffect effect) {
-        super(identifier, effect);
+    public ExampleArmorSet(ISetEffect effect) {
+        super(effect);
     }
 
     @Override

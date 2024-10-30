@@ -3,6 +3,8 @@ package org.crychicteam.cibrary.content.armorset;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -13,6 +15,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.armorset.defaults.DefaultSetEffect;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
@@ -28,8 +32,7 @@ import java.util.*;
  */
 public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmorSetChecker {
     public static final Item EMPTY_SLOT_MARKER = null;
-    public static final ResourceKey<Registry<ArmorSet>> ARMOR_SET = ResourceKey.createRegistryKey(new ResourceLocation(Cibrary.MOD_ID,"armor_set"));
-    public ResourceKey<?> identifier;
+    public static final ResourceKey<? extends Registry<ArmorSet>> ARMOR_SET = ResourceKey.createRegistryKey(new ResourceLocation("armor_set"));
     private final Map<MobEffect, Integer> effects;
     private final Multimap<Attribute, AttributeModifier> attributes;
     protected ISetEffect effect;
@@ -51,11 +54,9 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
     /**
      * Constructs an ArmorSet with the specified identifier and effect.
      *
-     * @param identifier The identifier of the armor set.
      * @param effect The effect associated with the armor set.
      */
-    public ArmorSet(ResourceKey<?> identifier, ISetEffect effect) {
-        this.identifier = identifier;
+    public ArmorSet(ISetEffect effect) {
         this.effect = effect;
         this.effects = new HashMap<>();
         this.attributes = HashMultimap.create();
@@ -69,59 +70,16 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
     }
 
     /**
-     * Constructs an ArmorSet with the specified identifier, effect, and curio items.
+     * Constructs an ArmorSet with a default effect.
      *
-     * @param string The identifier of the armor set.
-     * @param effect The effect associated with the armor set.
      */
-    public ArmorSet(String string, ISetEffect effect) {
-        this.identifier = ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID, string));
-        this.effect = effect;
-        this.effects = new HashMap<>();
-        this.attributes = HashMultimap.create();
-        this.equipmentItems = new EnumMap<>(EquipmentSlot.class);
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            this.equipmentItems.put(slot, new HashSet<>());
-        }
-        this.curioItems = new HashMap<>();
-        this.state = State.NORMAL;
-        this.skillState = "none";
+    public ArmorSet() {
+        this(new DefaultSetEffect());
     }
 
-    /**
-     * Constructs an ArmorSet with the specified identifier and a default effect.
-     *
-     * @param identifier The identifier of the armor set.
-     */
-    public ArmorSet(ResourceKey<?> identifier) {
-        this(identifier, new DefaultSetEffect());
-    }
-
-//    /**
-//     * Constructs an ArmorSet with a default identifier and effect.
-//     * Shouldn't be called normally.
-//     */
-//    public ArmorSet() {
-//        this(ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID,"default")));
+//    public ResourceKey<ArmorSet> getSetKey() {
+//        return
 //    }
-
-    /**
-     * Constructs an ArmorSet with a default identifier and effect.
-     */
-    public ArmorSet(String string) {
-        this(ResourceKey.create(ARMOR_SET, new ResourceLocation(Cibrary.MOD_ID, string)));
-    }
-
-    // Getters
-
-    /**
-     * Gets the identifier of the armor set.
-     *
-     * @return The identifier of the armor set.
-     */
-    public ResourceKey<?> getIdentifier() {
-        return identifier;
-    }
 
     /**
      * Gets the effects of the armor set.
@@ -187,16 +145,6 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
     }
 
     // Setters
-
-    /**
-     * Sets the identifier of the armor set.
-     *
-     * @param identifier The new identifier of the armor set.
-     */
-    public void setIdentifier(ResourceKey<?> identifier) {
-        this.identifier = identifier;
-    }
-
     /**
      * Sets the state of the armor set.
      *

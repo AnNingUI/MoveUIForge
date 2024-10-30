@@ -55,7 +55,7 @@ public class CuriosIntegration {
 
         if (event.getEntity() instanceof ServerPlayer player) {
             if (Cibrary.ARMOR_SET_MANAGER != null) {
-                Cibrary.ARMOR_SET_MANAGER.updateEntitySetEffect(player);
+                Cibrary.ARMOR_SET_MANAGER.updateEntityISetEffect(player);
                 ArmorSetHandler.syncArmorSet(player);
             } else {
                 System.err.println("ArmorSetManager is null in CuriosIntegration.onCurioChangeEvent");

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import org.crychicteam.cibrary.api.registry.armorset.ArmorSetCustomRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
@@ -19,8 +20,7 @@ import java.util.Set;
  * Used in handlers.
  * @author M1hono
  */
-public class ArmorSetUpdater extends ArmorSetRegistry {
-
+public class ArmorSetUpdater {
     /**
      * Protected constructor to initialize the ArmorSetUpdater.
      */
@@ -57,26 +57,36 @@ public class ArmorSetUpdater extends ArmorSetRegistry {
      * Finds the matching armor set for the given entity based on the items it is wearing.
      *
      * @param entity The entity to find the matching armor set for.
-     * @return The matching armor set, or the default armor set if no match is found.
+     * @return The matching armor set, or the empty set if no match is found.
      */
     private ArmorSet findMatchingArmorSet(LivingEntity entity) {
-        Set<ArmorSet> potentialSets = new HashSet<>();
+        Set<ArmorSet> potentialSets = null;
+
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             Item item = entity.getItemBySlot(slot).getItem();
-            Set<ArmorSet> setsForItem = itemToSetIndex.get(item);
-            if (setsForItem != null) {
-                if (potentialSets.isEmpty()) {
-                    potentialSets.addAll(setsForItem);
+            Set<ArmorSet> setsForItem = ArmorSetCustomRegistry.getItemToSetIndex().get(item);
+
+            if (setsForItem != null && !setsForItem.isEmpty()) {
+                if (potentialSets == null) {
+                    potentialSets = new HashSet<>(setsForItem);
                 } else {
                     potentialSets.retainAll(setsForItem);
                 }
+
+                if (potentialSets.isEmpty()) {
+                    return ArmorSetCustomRegistry.EMPTY_SET.get();
+                }
             }
+        }
+
+        if (potentialSets == null) {
+            return ArmorSetCustomRegistry.EMPTY_SET.get();
         }
 
         return potentialSets.stream()
                 .filter(set -> set.matches(entity))
                 .findFirst()
-                .orElse(defaultArmorSet);
+                .orElse(ArmorSetCustomRegistry.EMPTY_SET.get());
     }
 
     /**

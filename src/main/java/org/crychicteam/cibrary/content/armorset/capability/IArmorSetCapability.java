@@ -1,13 +1,15 @@
 package org.crychicteam.cibrary.content.armorset.capability;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.INBTSerializable;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 
 import java.util.List;
 
-public interface IArmorSetCapability {
+public interface IArmorSetCapability extends INBTSerializable<CompoundTag> {
     ArmorSet getActiveSet();
     ArmorSet.State getState();
     String getSkillState();
