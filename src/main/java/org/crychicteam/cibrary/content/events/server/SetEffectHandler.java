@@ -1,4 +1,4 @@
-package org.crychicteam.cibrary.content.events.common;
+package org.crychicteam.cibrary.content.events.server;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -12,7 +12,9 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.crychicteam.cibrary.Cibrary;
+import org.crychicteam.cibrary.api.common.ServerKeyManager;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
+import org.crychicteam.cibrary.content.armorset.SkillKey;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetManager;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 import org.crychicteam.cibrary.content.event.ItemDamageEvent;
@@ -22,7 +24,7 @@ import org.crychicteam.cibrary.content.event.StandOnFluidEvent;
 import java.util.Map;
 import java.util.Set;
 
-import static org.crychicteam.cibrary.content.events.common.ArmorSetHandler.syncArmorSet;
+import static org.crychicteam.cibrary.content.events.server.ArmorSetHandler.syncArmorSet;
 
 public class SetEffectHandler {
     private final ArmorSetManager armorSetManager = Cibrary.ARMOR_SET_MANAGER;
@@ -50,6 +52,24 @@ public class SetEffectHandler {
             }
             if (!player.isCrouching()) {
                 set.getEffect().crouchingEffect(player);
+            }
+            var keyId = SkillKey.SKILL_KEY.id;
+            if (ServerKeyManager.isJustPressed(player, keyId)) {
+                set.getEffect().onSkillPress(player);
+            }
+
+            if (ServerKeyManager.isCharging(player, keyId)) {
+                float power = ServerKeyManager.getPower(player, keyId);
+                set.getEffect().onSkillCharging(player, power);
+            }
+
+            if (ServerKeyManager.isJustReleased(player, keyId)) {
+                float power = ServerKeyManager.getPower(player, keyId);
+                set.getEffect().onSkillRelease(player, power);
+            }
+
+            if (ServerKeyManager.isDoubleClicked(player, keyId)) {
+                set.getEffect().onSkillDoubleClick(player);
             }
         }
     }

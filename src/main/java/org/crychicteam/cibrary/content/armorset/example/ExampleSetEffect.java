@@ -11,10 +11,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.event.ItemHurtEffectResult;
+import org.crychicteam.cibrary.content.key.KeyData;
 
 public class ExampleSetEffect implements ISetEffect {
     @Override
@@ -55,6 +57,12 @@ public class ExampleSetEffect implements ISetEffect {
             return ItemHurtEffectResult.cancel();
         }
         return ItemHurtEffectResult.unmodified();
+    }
+
+    @Override
+    public void onSkillPress(ServerPlayer player) {
+        ISetEffect.super.onSkillPress(player);
+        player.level().explode(player,player.getX(),player.getY(),player.getZ(),10,false, Level.ExplosionInteraction.NONE);
     }
 
     @Override

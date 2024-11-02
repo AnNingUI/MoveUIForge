@@ -1,6 +1,7 @@
 package org.crychicteam.cibrary.content.armorset;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -115,4 +116,30 @@ public interface ISetEffect {
      * @param event
      */
     default void stackedOnOther(LivingEntity entity, ItemStackedOnOtherEvent event) {};
+
+    /**
+     * Trigger when the entity press skill key.
+     * @param player
+     */
+    default void onSkillPress(ServerPlayer player) {}
+
+    /**
+     * Trigger when the entity is charging skill.
+     * @param player
+     * @param power
+     */
+    default void onSkillCharging(ServerPlayer player, float power) {};
+
+    /**
+     * Trigger when the entity release skill.
+     * @param player
+     * @param power
+     */
+    default void onSkillRelease(ServerPlayer player, float power) {};
+
+    /**
+     * Trigger when the entity double click skill key.
+     * @param player
+     */
+    default void onSkillDoubleClick(ServerPlayer player) {};
 }

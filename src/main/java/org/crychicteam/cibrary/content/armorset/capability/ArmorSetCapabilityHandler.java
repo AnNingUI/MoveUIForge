@@ -2,7 +2,6 @@ package org.crychicteam.cibrary.content.armorset.capability;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -12,9 +11,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
-import org.crychicteam.cibrary.Cibrary;
-import org.crychicteam.cibrary.api.registry.armorset.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 

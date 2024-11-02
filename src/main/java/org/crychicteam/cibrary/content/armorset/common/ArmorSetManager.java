@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import org.crychicteam.cibrary.Cibrary;
-import org.crychicteam.cibrary.api.registry.armorset.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.capability.IArmorSetCapability;

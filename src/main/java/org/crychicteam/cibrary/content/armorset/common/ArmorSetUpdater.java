@@ -5,7 +5,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import org.crychicteam.cibrary.api.registry.armorset.ArmorSetCustomRegistry;
+import net.minecraft.world.item.ItemStack;
+import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
@@ -60,34 +61,30 @@ public class ArmorSetUpdater {
      * @return The matching armor set, or the empty set if no match is found.
      */
     private ArmorSet findMatchingArmorSet(LivingEntity entity) {
-        Set<ArmorSet> potentialSets = null;
-
+        boolean hasAnyEquipment = false;
+        Set<ArmorSet> firstMatchingSets = null;
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            Item item = entity.getItemBySlot(slot).getItem();
-            Set<ArmorSet> setsForItem = ArmorSetCustomRegistry.getItemToSetIndex().get(item);
-
-            if (setsForItem != null && !setsForItem.isEmpty()) {
-                if (potentialSets == null) {
-                    potentialSets = new HashSet<>(setsForItem);
-                } else {
-                    potentialSets.retainAll(setsForItem);
-                }
-
-                if (potentialSets.isEmpty()) {
-                    return ArmorSetCustomRegistry.EMPTY_SET.get();
+            ItemStack itemStack = entity.getItemBySlot(slot);
+            if (!itemStack.isEmpty()) {
+                hasAnyEquipment = true;
+                Set<ArmorSet> setsForItem = ArmorSetCustomRegistry.getItemToSetIndex().get(itemStack.getItem());
+                if (setsForItem != null && !setsForItem.isEmpty()) {
+                    firstMatchingSets = setsForItem;
+                    break;
                 }
             }
         }
 
-        if (potentialSets == null) {
+        if (!hasAnyEquipment || firstMatchingSets == null) {
             return ArmorSetCustomRegistry.EMPTY_SET.get();
         }
 
-        return potentialSets.stream()
+        return firstMatchingSets.stream()
                 .filter(set -> set.matches(entity))
                 .findFirst()
                 .orElse(ArmorSetCustomRegistry.EMPTY_SET.get());
     }
+
 
     /**
      * Applies the effects of the given armor set to the entity.

@@ -1,9 +1,11 @@
-package org.crychicteam.cibrary.api.registry.armorset;
+package org.crychicteam.cibrary.api.registry;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -112,11 +114,27 @@ public class ArmorSetCustomRegistry {
         }
     }
 
+    public static TagKey<ArmorSet> create(ResourceLocation name) {
+        return TagKey.create(ARMOR_SET_REGISTRY_KEY, name);
+    }
+
     public static class Builder {
         private final ArmorSet armorSet;
 
         public Builder() {
             this.armorSet = new ArmorSet();
+        }
+
+        public Builder(ArmorSet armorSet) {
+            this.armorSet = armorSet;
+        }
+
+        public static Builder of(ArmorSet armorSet) {
+            return new Builder(armorSet);
+        }
+
+        public static <T extends ArmorSet> Builder of(Supplier<T> factory) {
+            return new Builder(factory.get());
         }
 
         public Builder effect(ISetEffect effect) {

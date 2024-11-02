@@ -1,4 +1,4 @@
-package org.crychicteam.cibrary.content.events.common;
+package org.crychicteam.cibrary.content.events.server;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

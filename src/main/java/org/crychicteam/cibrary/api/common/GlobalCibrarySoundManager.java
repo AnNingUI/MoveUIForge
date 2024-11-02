@@ -1,8 +1,9 @@
-package org.crychicteam.cibrary.content.sound;
+package org.crychicteam.cibrary.api.common;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import org.crychicteam.cibrary.content.sound.SoundData;
 import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 import org.crychicteam.cibrary.network.sound.CibrarySoundPacket;
 

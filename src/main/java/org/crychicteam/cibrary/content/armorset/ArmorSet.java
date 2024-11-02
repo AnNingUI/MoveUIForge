@@ -2,11 +2,8 @@ package org.crychicteam.cibrary.content.armorset;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,13 +12,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistry;
-import org.crychicteam.cibrary.Cibrary;
+import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
 import org.crychicteam.cibrary.content.armorset.defaults.DefaultSetEffect;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Armor Set Class.
@@ -32,7 +28,6 @@ import java.util.*;
  */
 public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmorSetChecker {
     public static final Item EMPTY_SLOT_MARKER = null;
-    public static final ResourceKey<? extends Registry<ArmorSet>> ARMOR_SET = ResourceKey.createRegistryKey(new ResourceLocation("armor_set"));
     private final Map<MobEffect, Integer> effects;
     private final Multimap<Attribute, AttributeModifier> attributes;
     protected ISetEffect effect;
@@ -222,6 +217,60 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
         attributes.put(attribute, modifier);
     }
 
+    public boolean is(TagKey<ArmorSet> key) {
+        var registry = ArmorSetCustomRegistry.getRegistry();
+        if (registry == null) return false;
+        var tags = registry.tags();
+        if (tags == null) return false;
+        var tag = tags.getTag(key);
+        return tag.contains(this);
+    }
+
+    @SafeVarargs
+    public final boolean is(TagKey<ArmorSet>... tags) {
+        var registry = ArmorSetCustomRegistry.getRegistry();
+        if (registry == null) return false;
+        var regTags = registry.tags();
+        if (regTags == null) return false;
+
+        for (TagKey<ArmorSet> key : tags) {
+            var tag = regTags.getTag(key);
+            if (tag.contains(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Optimized quick check that only check the first equipment.
+     * @param entity the entity
+     * @return true | false
+     */
+    private boolean quickCheck(LivingEntity entity) {
+        if (equipmentItems.isEmpty() && curioItems.isEmpty()) {
+            return true;
+        }
+        Optional<Map.Entry<EquipmentSlot, Set<Item>>> firstRequired = equipmentItems.entrySet().stream()
+                .filter(entry -> !entry.getValue().isEmpty() && !entry.getValue().contains(EMPTY_SLOT_MARKER))
+                .findFirst();
+        if (firstRequired.isPresent()) {
+            Map.Entry<EquipmentSlot, Set<Item>> entry = firstRequired.get();
+            ItemStack equippedItem = entity.getItemBySlot(entry.getKey());
+            if (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem())) {
+                return false;
+            }
+            Set<ArmorSet> possibleSets = ArmorSetCustomRegistry.getItemToSetIndex().get(equippedItem.getItem());
+            return possibleSets != null && possibleSets.contains(this);
+        }
+        if (!curioItems.isEmpty()) {
+            Map.Entry<Item, Integer> firstCurio = curioItems.entrySet().iterator().next();
+            Set<ArmorSet> possibleSets = ArmorSetCustomRegistry.getItemToSetIndex().get(firstCurio.getKey());
+            return possibleSets != null && possibleSets.contains(this);
+        }
+        return true;
+    }
+
     /**
      * Checks if the armor set matches the given entity.
      *
@@ -230,13 +279,17 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
      */
     @Override
     public boolean matches(LivingEntity entity) {
+        if (!quickCheck(entity)) {
+            return false;
+        }
         for (Map.Entry<EquipmentSlot, Set<Item>> entry : equipmentItems.entrySet()) {
             ItemStack equippedItem = entity.getItemBySlot(entry.getKey());
             if (entry.getValue().contains(EMPTY_SLOT_MARKER)) {
                 if (!equippedItem.isEmpty()) {
                     return false;
                 }
-            } else if (!entry.getValue().isEmpty() && (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem()))) {
+            } else if (!entry.getValue().isEmpty() &&
+                    (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem()))) {
                 return false;
             }
         }
