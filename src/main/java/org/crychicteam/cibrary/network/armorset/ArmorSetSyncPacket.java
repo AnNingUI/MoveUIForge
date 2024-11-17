@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.capability.IArmorSetCapability;
@@ -24,8 +24,8 @@ public class ArmorSetSyncPacket extends SerialPacketBase {
 
     public ArmorSetSyncPacket(IArmorSetCapability cap) {
         ArmorSet activeSet = cap.getActiveSet();
-        ResourceLocation id = ArmorSetCustomRegistry.getRegistry().getKey(activeSet);
-        this.activeSetIdentifier = id != null ? id.toString() : ArmorSetCustomRegistry.EMPTY.toString();
+        ResourceLocation id = ArmorSetRegistry.getRegistry().getKey(activeSet);
+        this.activeSetIdentifier = id != null ? id.toString() : ArmorSetRegistry.EMPTY.toString();
     }
 
     @Override
@@ -44,10 +44,10 @@ public class ArmorSetSyncPacket extends SerialPacketBase {
             clientPlayer.getCapability(ArmorSetCapability.ARMOR_SET_CAPABILITY).ifPresent(cap -> {
                 try {
                     ResourceLocation id = new ResourceLocation(activeSetIdentifier);
-                    ArmorSet activeSet = ArmorSetCustomRegistry.getRegistry().getValue(id);
-                    cap.setActiveSet(activeSet != null ? activeSet : ArmorSetCustomRegistry.EMPTY_SET.get());
+                    ArmorSet activeSet = ArmorSetRegistry.getRegistry().getValue(id);
+                    cap.setActiveSet(activeSet != null ? activeSet : ArmorSetRegistry.EMPTY_SET.get());
                 } catch (Exception e) {
-                    cap.setActiveSet(ArmorSetCustomRegistry.EMPTY_SET.get());
+                    cap.setActiveSet(ArmorSetRegistry.EMPTY_SET.get());
                 }
             });
         }

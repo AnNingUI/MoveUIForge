@@ -4,15 +4,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.ISetEffect;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -67,7 +65,7 @@ public class ArmorSetUpdater {
             ItemStack itemStack = entity.getItemBySlot(slot);
             if (!itemStack.isEmpty()) {
                 hasAnyEquipment = true;
-                Set<ArmorSet> setsForItem = ArmorSetCustomRegistry.getItemToSetIndex().get(itemStack.getItem());
+                Set<ArmorSet> setsForItem = ArmorSetRegistry.getItemToSetIndex().get(itemStack.getItem());
                 if (setsForItem != null && !setsForItem.isEmpty()) {
                     firstMatchingSets = setsForItem;
                     break;
@@ -76,13 +74,13 @@ public class ArmorSetUpdater {
         }
 
         if (!hasAnyEquipment || firstMatchingSets == null) {
-            return ArmorSetCustomRegistry.EMPTY_SET.get();
+            return ArmorSetRegistry.EMPTY_SET.get();
         }
 
         return firstMatchingSets.stream()
                 .filter(set -> set.matches(entity))
                 .findFirst()
-                .orElse(ArmorSetCustomRegistry.EMPTY_SET.get());
+                .orElse(ArmorSetRegistry.EMPTY_SET.get());
     }
 
 

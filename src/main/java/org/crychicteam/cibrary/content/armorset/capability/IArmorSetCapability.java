@@ -10,6 +10,10 @@ import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import java.util.List;
 
 public interface IArmorSetCapability extends INBTSerializable<CompoundTag> {
+    /**
+     *
+     * @return {@link ArmorSet}
+     */
     ArmorSet getActiveSet();
     ArmorSet.State getState();
     String getSkillState();

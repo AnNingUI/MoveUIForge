@@ -11,8 +11,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.crychicteam.cibrary.api.common.ServerKeyManager;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.common.GlobalCibrarySoundManager;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.SkillKey;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.common.ArmorSetAttackListener;
@@ -22,9 +22,9 @@ import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 import org.crychicteam.cibrary.content.events.server.ArmorSetHandler;
 import org.crychicteam.cibrary.content.events.server.ServerKeyHandler;
 import org.crychicteam.cibrary.content.events.server.SetEffectHandler;
-import org.crychicteam.cibrary.api.common.GlobalCibrarySoundManager;
-import org.crychicteam.cibrary.network.CibraryNetworkHandler;
+import org.crychicteam.cibrary.content.key.DefaultKey;
 import org.crychicteam.cibrary.content.key.KeyRegistry;
+import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 import org.slf4j.Logger;
 
 @Mod(Cibrary.MOD_ID)
@@ -49,10 +49,12 @@ public class Cibrary {
 		registerEventListeners();
 		initializeArmorSets(modEventBus);
 		SkillKey.init();
+		DefaultKey.register();
+		ArmorSetRegistryExample.init();
 	}
 
 	private void initializeRegistries(IEventBus modEventBus) {
-		ArmorSetCustomRegistry.register(modEventBus);
+		ArmorSetRegistry.register(modEventBus);
 		modEventBus.addListener(this::onCommonSetup);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -68,7 +70,6 @@ public class Cibrary {
 	private void initializeArmorSets(IEventBus modEventBus) {
 		AttackEventHandler.register(4000, new ArmorSetAttackListener(ARMOR_SET_MANAGER));
 		modEventBus.addListener(ArmorSetCapability::register);
-		ArmorSetRegistryExample.init();
 	}
 
 	private void initializeKeySystem(FMLConstructModEvent event) {

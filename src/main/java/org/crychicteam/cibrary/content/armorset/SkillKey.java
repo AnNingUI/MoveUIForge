@@ -8,10 +8,9 @@ import org.lwjgl.glfw.GLFW;
 public class SkillKey {
     public static KeyConfig SKILL_KEY;
     public static void init() {
-        SKILL_KEY = KeyRegistry.register(new KeyConfig.Builder(Cibrary.MOD_ID, "armor_set.key", GLFW.GLFW_KEY_G)
+        SKILL_KEY = KeyRegistry.register(new KeyConfig.Builder(Cibrary.MOD_ID, "armor_set_skill", GLFW.GLFW_KEY_G)
                 .category("armor_set")
                 .enableCharging()
-                .enableDoubleClick()
                 .maxPower(4.0f)
                 .build()
         );

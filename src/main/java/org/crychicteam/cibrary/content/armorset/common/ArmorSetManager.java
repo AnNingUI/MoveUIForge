@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import org.crychicteam.cibrary.Cibrary;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.content.armorset.capability.ArmorSetCapability;
 import org.crychicteam.cibrary.content.armorset.capability.IArmorSetCapability;
@@ -48,9 +48,9 @@ public class ArmorSetManager extends ArmorSetUpdater {
      * @return The ResourceKey for the ArmorSet, or empty if not found
      */
     public Optional<ResourceKey<ArmorSet>> getKey(ArmorSet armorSet) {
-        ResourceLocation id = ArmorSetCustomRegistry.getRegistry().getKey(armorSet);
+        ResourceLocation id = ArmorSetRegistry.getRegistry().getKey(armorSet);
         if (id == null) return Optional.empty();
-        return Optional.of(ResourceKey.create(ArmorSetCustomRegistry.ARMOR_SET_REGISTRY_KEY, id));
+        return Optional.of(ResourceKey.create(ArmorSetRegistry.ARMOR_SET_REGISTRY_KEY, id));
     }
 
     /**
@@ -60,7 +60,7 @@ public class ArmorSetManager extends ArmorSetUpdater {
      * @return The ArmorSet, or empty if not found
      */
     public Optional<ArmorSet> getArmorSet(ResourceKey<ArmorSet> key) {
-        return Optional.ofNullable(ArmorSetCustomRegistry.getRegistry().getValue(key.location()));
+        return Optional.ofNullable(ArmorSetRegistry.getRegistry().getValue(key.location()));
     }
 
     public ArmorSet getDefaultarmorSet() {
@@ -76,7 +76,7 @@ public class ArmorSetManager extends ArmorSetUpdater {
     public Optional<ArmorSet> getArmorSet(String identifier) {
         try {
             ResourceLocation id = new ResourceLocation(identifier);
-            return Optional.ofNullable(ArmorSetCustomRegistry.getRegistry().getValue(id));
+            return Optional.ofNullable(ArmorSetRegistry.getRegistry().getValue(id));
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -91,7 +91,7 @@ public class ArmorSetManager extends ArmorSetUpdater {
     public ArmorSet getActiveArmorSet(Player player) {
         return player.getCapability(ArmorSetCapability.ARMOR_SET_CAPABILITY)
                 .map(IArmorSetCapability::getActiveSet)
-                .orElse(ArmorSetCustomRegistry.EMPTY_SET.get());
+                .orElse(ArmorSetRegistry.EMPTY_SET.get());
     }
 
     /**
@@ -159,7 +159,7 @@ public class ArmorSetManager extends ArmorSetUpdater {
     public ArmorSet getSetForItem(Player player, Item item) {
         return getArmorSetCapability(player)
                 .map(cap -> cap.getSetForItem(item.getDefaultInstance()))
-                .orElse(ArmorSetCustomRegistry.EMPTY_SET.get());
+                .orElse(ArmorSetRegistry.EMPTY_SET.get());
     }
 
     /**

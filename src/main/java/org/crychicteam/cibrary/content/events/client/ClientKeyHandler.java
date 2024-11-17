@@ -21,13 +21,52 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ClientKeyHandler manages the state and behavior of custom key bindings in the client.
+ * ClientKeyHandler manages custom key bindings in Minecraft's client-side environment.
  * <p>
- * It supports single and double-click detection, charging mechanics, and client-server
+ * Data Structures:
  * <p>
- * synchronization of key states. This handler listens to the client tick events and
+ * - Uses HashMap for O(1) access to key states and related timing data
  * <p>
- * updates key states each tick to ensure accurate real-time tracking of key interactions.
+ * - KEY_STATES: Maps ResourceLocation to KeyData for current key states
+ * <p>
+ * - PREVIOUS_STATES: Tracks previous tick's key states for edge detection
+ * <p>
+ * - PRESS_START_TIMES: Records key press timestamps for duration calculation
+ * <p>
+ * - LAST_SENT_STATE: Maintains last sent state to minimize network traffic
+ * <p>
+ * <p>
+ * Key Features:
+ * <p>
+ * 1. State Management
+ * <p>
+ *    - Implements a finite state machine with states: IDLE, CHARGING, PRESSED, RELEASED
+ * <p>
+ *    - Uses timestamp-based state transitions for accurate timing
+ * <p>
+ * <p>
+ * 2. Input Detection
+ * <p>
+ *    - Basic press: Standard key press and release detection
+ * <p>
+ *    - Charging: Hold detection after CHARGE_THRESHOLD duration
+ * <p>
+ * <p>
+ * 3. Network Synchronization
+ * <p>
+ *    - Client-server state sync via KeyStatePacket
+ * <p>
+ *    - Optimized to send updates only on state changes
+ * <p>
+ * <p>
+ * Performance Considerations:
+ * <p>
+ * - O(1) lookup time for all key states and timings
+ * <p>
+ * - O(n) processing time per tick where n is number of registered keys
+ * <p>
+ * - Memory usage scales linearly with number of registered keys
+ * <p>
  * @author M1hono
  */
 @EventBusSubscriber(value = Dist.CLIENT)
@@ -36,44 +75,71 @@ public class ClientKeyHandler {
     private static final Map<ResourceLocation, KeyData> KEY_STATES = new HashMap<>();
     private static final Map<ResourceLocation, Boolean> PREVIOUS_STATES = new HashMap<>();
     private static final Map<ResourceLocation, Long> PRESS_START_TIMES = new HashMap<>();
-    private static final Map<ResourceLocation, Long> RELEASE_TIMES = new HashMap<>();
     private static final Map<ResourceLocation, KeyData.KeyState> LAST_SENT_STATE = new HashMap<>();
-    /** Threshold for key hold duration to enter charging mode (in milliseconds). */
+
+    /** Minimum hold duration (ms) to trigger charging state */
     public static final long CHARGE_THRESHOLD = 100;
-    /** Maximum allowable time between clicks for double-click detection (in milliseconds). */
-    public static final long DOUBLE_CLICK_TIME = 200;
-    /** Minimum allowable time between releases to enter release mode (in milliseconds). */
+
+    /** Minimum power level required for release action */
     public static final float LEAST_RELEASE_TIME = 0.5f;
 
     /**
-     * Registers a new key in the handler. Initializes state-tracking maps for the key
+     * Registers a new key binding in the handler's state management system.
      * <p>
-     * to enable custom interactions.
+     * Implementation Details:
+     * <p>
+     * 1. Performs duplicate registration check (O(1))
+     * <p>
+     * 2. Initializes all state maps with default values
+     * <p>
+     * Memory Impact:
+     * <p>
+     * - Adds entries to tracking maps
+     * <p>
      *
-     * @param config The configuration of the key to register.
+     * @param config Configuration object containing key binding parameters
      */
     public static void registerKey(KeyConfig config) {
         if (KEY_STATES.containsKey(config.id)) {
             Cibrary.LOGGER.warn("Duplicate key registration attempt: {}", config.id);
             return;
         }
-        // Initialize states for the new key
         KEY_STATES.put(config.id, new KeyData(config.id));
         PREVIOUS_STATES.put(config.id, false);
         PRESS_START_TIMES.put(config.id, 0L);
-        RELEASE_TIMES.put(config.id, 0L);
         LAST_SENT_STATE.put(config.id, KeyData.KeyState.IDLE);
         Cibrary.LOGGER.debug("Registered key: {}", config.id);
     }
 
     /**
-     * Event listener that updates all key states each client tick. Processes each
+     * Core tick processing loop for key state management.
      * <p>
-     * registered key to determine if it has been pressed, released, charged, or clicked.
+     * Algorithm Overview:
      * <p>
-     * Updates server if a key state changes.
+     * For each registered key:
+     * <p>
+     *    - Retrieve current and previous states
+     * <p>
+     *    - Calculate time deltas
+     * <p>
+     *    - Update state based on timing conditions
+     * <p>
+     *    - Trigger network sync if state changed
+     * <p>
+     * Time Complexity: O(n) where n is number of registered keys
+     * <p>
+     * Space Complexity: O(1) additional memory per tick
+     * <p>
+     * State Transition Logic:
+     * - IDLE -> CHARGING: Hold duration > CHARGE_THRESHOLD
+     * <p>
+     * - CHARGING -> RELEASED: Release with sufficient power
+     * <p>
+     * - CHARGING -> PRESSED: Release with insufficient power
+     * <p>
+     * - IDLE -> PRESSED: Standard key press detected
      *
-     * @param event The client tick event.
+     * @param event Client tick event from Forge event bus
      */
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent event) {
@@ -81,23 +147,6 @@ public class ClientKeyHandler {
 
         long currentTime = System.currentTimeMillis();
 
-        /*
-          The main logic of this tracking is:
-          It iterates through all registered key configurations, retrieves their current state,
-          and updates their status based on whether they are pressed or released.
-          If the key state changes, it sends the updated state to the server.
-          It also handles charging, single-click, and double-click detection.
-
-          - Charging: If the key is held down for longer than the CHARGE_THRESHOLD, and charging is enabled,
-            the key state is set to CHARGING. The power level is updated based on the hold duration.
-
-          - Single Click: If the key is released and the click count is 1, and the time since release exceeds
-            the DOUBLE_CLICK_TIME, the key state set to PRESSED.
-
-          - Double Click: If the key release and the click count is 2, and the time since release exceeds
-            the DOUBLE_CLICK_TIME, the key state is set to DOUBLE_CLICKED.
-
-         */
         for (KeyConfig config : KeyRegistry.getAllConfigs()) {
             ResourceLocation keyId = config.id;
             KeyData keyData = KEY_STATES.get(keyId);
@@ -109,11 +158,8 @@ public class ClientKeyHandler {
             }
 
             boolean isPressed = config.isDown();
-
-            // Update the key state based on the current press status
             updateKeyState(keyId, config, keyData, isPressed, prevPressed, currentTime);
 
-            // Send key state if it has changed
             KeyData.KeyState lastSent = LAST_SENT_STATE.get(keyId);
             if (lastSent != keyData.state) {
                 sendKeyState(keyData);
@@ -122,7 +168,6 @@ public class ClientKeyHandler {
 
             PREVIOUS_STATES.put(keyId, isPressed);
 
-            // Reset the key state if necessary
             if (keyData.state != KeyData.KeyState.IDLE && keyData.state != KeyData.KeyState.CHARGING) {
                 keyData.state = KeyData.KeyState.IDLE;
             }
@@ -130,14 +175,14 @@ public class ClientKeyHandler {
     }
 
     /**
-     * Updates the state of a key based on its current and previous press status.
+     * Updates key state based on current conditions and timing.
      *
-     * @param keyId       The unique identifier of the key.
-     * @param config      The configuration data for the key.
-     * @param keyData     The key's current data and state.
-     * @param isPressed   True if the key is currently pressed.
-     * @param prevPressed True if the key was pressed in the previous tick.
-     * @param currentTime The current system time in milliseconds.
+     * State Machine Implementation:
+     * 1. Press Detection -> handleKeyPress()
+     * 2. Release Detection -> handleKeyRelease()
+     *
+     * Time Complexity: O(1)
+     * Space Complexity: O(1)
      */
     private static void updateKeyState(ResourceLocation keyId, KeyConfig config, KeyData keyData,
                                        boolean isPressed, boolean prevPressed, long currentTime) {
@@ -145,11 +190,21 @@ public class ClientKeyHandler {
             handleKeyPress(keyId, config, keyData, currentTime, prevPressed);
         } else if (prevPressed) {
             handleKeyRelease(keyId, config, keyData, currentTime);
-        } else {
-            handleIdleState(keyId, config, keyData, currentTime);
         }
     }
 
+    /**
+     * Processes key press events and manages charging mechanics.
+     *
+     * Algorithm:
+     * 1. Initial press detection and timestamp recording
+     * 2. Hold duration calculation
+     * 3. Charge state transition check
+     * 4. Power level update for charging keys
+     *
+     * Time Complexity: O(1)
+     * Memory Usage: Constant
+     */
     private static void handleKeyPress(ResourceLocation keyId, KeyConfig config, KeyData keyData,
                                        long currentTime, boolean prevPressed) {
         if (!prevPressed) {
@@ -159,9 +214,8 @@ public class ClientKeyHandler {
 
         long holdDuration = currentTime - PRESS_START_TIMES.get(keyId);
 
-        if (holdDuration > DOUBLE_CLICK_TIME && config.enableCharging && keyData.state == KeyData.KeyState.IDLE) {
+        if (holdDuration > CHARGE_THRESHOLD && config.enableCharging && keyData.state == KeyData.KeyState.IDLE) {
             keyData.state = KeyData.KeyState.CHARGING;
-            keyData.clickCount = 0;
             showDebugMessage("Start Charging: " + keyId.getPath(), config);
         }
 
@@ -170,20 +224,20 @@ public class ClientKeyHandler {
         }
     }
 
-
     /**
-     * Processes actions when a key is released. Determines if the key should
-     * be set to a released state or if it should register a click.
+     * Handles key release events and determines resulting state.
      *
-     * @param keyId       The unique identifier of the key.
-     * @param config      The configuration data for the key.
-     * @param keyData     The key's current data and state.
-     * @param currentTime The current system time in milliseconds.
+     * State Transition Logic:
+     * 1. Charging Release:
+     *    - Power < LEAST_RELEASE_TIME -> PRESSED
+     *    - Power >= LEAST_RELEASE_TIME -> RELEASED
+     * 2. Normal Release:
+     *    - Transitions to PRESSED state
+     *
+     * Time Complexity: O(1)
+     * Memory Impact: Updates timestamp storage
      */
     private static void handleKeyRelease(ResourceLocation keyId, KeyConfig config, KeyData keyData, long currentTime) {
-        long holdDuration = currentTime - PRESS_START_TIMES.get(keyId);
-        RELEASE_TIMES.put(keyId, currentTime);
-
         if (keyData.state == KeyData.KeyState.CHARGING) {
             if (keyData.power < LEAST_RELEASE_TIME) {
                 keyData.state = KeyData.KeyState.PRESSED;
@@ -195,51 +249,27 @@ public class ClientKeyHandler {
             return;
         }
 
-        // Track click count for handling double clicks
-        keyData.clickCount++;
-        keyData.lastClickTime = currentTime;
+        keyData.state = KeyData.KeyState.PRESSED;
+        showDebugMessage("Key Pressed: " + keyId.getPath(), config);
         PRESS_START_TIMES.put(keyId, 0L);
     }
 
-
     /**
-     * Handles idle state detection, identifying single and double clicks.
+     * Updates power level for charging keys.
      *
-     * @param keyId       The unique identifier of the key.
-     * @param config      The configuration data for the key.
-     * @param keyData     The key's current data and state.
-     * @param currentTime The current system time in milliseconds.
-     */
-    private static void handleIdleState(ResourceLocation keyId, KeyConfig config, KeyData keyData, long currentTime) {
-        if (keyData.clickCount == 0 || keyData.state != KeyData.KeyState.IDLE) return;
-
-        long timeSinceRelease = currentTime - RELEASE_TIMES.get(keyId);
-        if (timeSinceRelease > Math.min(config.doubleClickTime, DOUBLE_CLICK_TIME)) {
-            if (keyData.clickCount == 1) {
-                keyData.state = KeyData.KeyState.PRESSED;
-                showDebugMessage("Key Pressed: " + keyId.getPath(), config);
-            } else if (keyData.clickCount == 2) {
-                keyData.state = KeyData.KeyState.DOUBLE_CLICKED;
-                showDebugMessage("Double Clicked: " + keyId.getPath(), config);
-            }
-            keyData.clickCount = 0;
-        }
-    }
-
-    /**
-     * Updates the power level of a key while it is being charged.
+     * Power Calculation:
+     * - Linear scaling based on hold duration
+     * - Capped by config.maxPower
+     * - Granularity: 0.1 units for network optimization
      *
-     * @param keyId       The unique identifier of the key.
-     * @param config      The configuration data for the key.
-     * @param keyData     The key's current data and state.
-     * @param currentTime The current system time in milliseconds.
+     * Time Complexity: O(1)
+     * Network Impact: Updates sent only on 0.1 unit changes
      */
     private static void updateChargePower(ResourceLocation keyId, KeyConfig config, KeyData keyData, long currentTime) {
         long holdDuration = currentTime - PRESS_START_TIMES.get(keyId);
         float oldPower = keyData.power;
         keyData.power = Math.min((float) holdDuration / 1000.0f, config.maxPower);
 
-        // Send updated power state if it has changed
         if ((int)(oldPower * 10) != (int)(keyData.power * 10)) {
             showDebugMessage(String.format("Charging %s: %.1f", keyId.getPath(), keyData.power), config);
             sendKeyState(keyData);
@@ -247,19 +277,20 @@ public class ClientKeyHandler {
     }
 
     /**
-     * Sends the current state of a key to the server to keep client and server synchronized.
+     * Sends key state updates to server.
      *
-     * @param keyData The key data to send.
+     * Network Optimization:
+     * - Only sends on state changes
+     * - Batches power updates by 0.1 increments
+     *
+     * @param keyData Current key state to synchronize
      */
     private static void sendKeyState(KeyData keyData) {
         CibraryNetworkHandler.HANDLER.toServer(new KeyStatePacket(keyData));
     }
 
     /**
-     * Displays debug messages on the client, if enabled in the key configuration.
-     *
-     * @param message The debug message to show.
-     * @param config  The key configuration specifying whether to display messages.
+     * Displays debug information in client chat.
      */
     private static void showDebugMessage(String message, KeyConfig config) {
         if (config.showDebugMessage) {
@@ -271,19 +302,18 @@ public class ClientKeyHandler {
     }
 
     /**
-     * Retrieves the current state of a specified key.
+     * Retrieves current key state.
      *
-     * @param keyId The unique identifier of the key.
-     * @return The current state of the key, if present.
+     * @param keyId Key identifier
+     * @return Optional containing KeyData if key exists
      */
     public static Optional<KeyData> getKeyState(ResourceLocation keyId) {
         return Optional.ofNullable(KEY_STATES.get(keyId));
     }
 
     /**
-     * Resets the state of a specified key, clearing press/release times and resetting to IDLE.
-     *
-     * @param keyId The unique identifier of the key.
+     * Resets key state to default values.
+     * @param keyId The unique identifier of the key to reset
      */
     public static void resetKeyState(ResourceLocation keyId) {
         KEY_STATES.computeIfPresent(keyId, (id, data) -> {
@@ -291,18 +321,16 @@ public class ClientKeyHandler {
             return data;
         });
         PRESS_START_TIMES.put(keyId, 0L);
-        RELEASE_TIMES.put(keyId, 0L);
         LAST_SENT_STATE.put(keyId, KeyData.KeyState.IDLE);
     }
 
     /**
-     * Clears all stored states for all keys, resetting the handler.
+     * Clears all key states and related data.
      */
     public static void clearAllStates() {
         KEY_STATES.clear();
         PREVIOUS_STATES.clear();
         PRESS_START_TIMES.clear();
-        RELEASE_TIMES.clear();
         LAST_SENT_STATE.clear();
     }
 }

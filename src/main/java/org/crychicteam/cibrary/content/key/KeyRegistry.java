@@ -1,5 +1,7 @@
 package org.crychicteam.cibrary.content.key;
 
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -7,10 +9,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.events.client.ClientKeyHandler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class KeyRegistry {
     private static final Map<ResourceLocation, KeyConfig> REGISTERED_KEYS = new LinkedHashMap<>();
@@ -49,9 +48,21 @@ public class KeyRegistry {
     }
 
     private static void onKeyMappingRegister(RegisterKeyMappingsEvent event) {
+        KeyMapping[] existingMappings = Minecraft.getInstance().options.keyMappings;
+
         for (KeyConfig config : REGISTERED_KEYS.values()) {
-            event.register(config.keyMapping);
-            Cibrary.LOGGER.debug("Registered key mapping for: {}", config.id);
+            boolean alreadyExists = false;
+            for (KeyMapping existing : existingMappings) {
+                if (existing.getName().equals(config.keyMapping.getName())) {
+                    alreadyExists = true;
+                    Cibrary.LOGGER.debug("Skipping registration for existing key mapping: {}", config.id);
+                    break;
+                }
+            }
+            if (!alreadyExists) {
+                event.register(config.keyMapping);
+                Cibrary.LOGGER.debug("Registered new key mapping for: {}", config.id);
+            }
         }
     }
 

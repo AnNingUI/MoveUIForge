@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.ArmorSet;
 import org.crychicteam.cibrary.network.CibraryNetworkHandler;
 
@@ -23,7 +23,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
     private Map<Item, ArmorSet> curioSetMap;
 
     public ArmorSetCapabilityHandler() {
-        this.activeSet = ArmorSetCustomRegistry.EMPTY_SET.get();
+        this.activeSet = ArmorSetRegistry.EMPTY_SET.get();
         this.itemSetMap = new HashMap<>();
         this.curioSetMap = new HashMap<>();
         updateItemSetMaps();
@@ -31,7 +31,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
 
     @Override
     public ArmorSet getActiveSet() {
-        return activeSet != null ? activeSet : ArmorSetCustomRegistry.EMPTY_SET.get();
+        return activeSet != null ? activeSet : ArmorSetRegistry.EMPTY_SET.get();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
 
     @Override
     public void setActiveSet(ArmorSet set) {
-        this.activeSet = set != null ? set : ArmorSetCustomRegistry.EMPTY_SET.get();
+        this.activeSet = set != null ? set : ArmorSetRegistry.EMPTY_SET.get();
         updateItemSetMaps();
     }
 
@@ -71,7 +71,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
         if (set == null) {
             set = curioSetMap.get(itemStack.getItem());
         }
-        return set != null ? set : ArmorSetCustomRegistry.EMPTY_SET.get();
+        return set != null ? set : ArmorSetRegistry.EMPTY_SET.get();
     }
 
     private void updateItemSetMaps() {
@@ -124,7 +124,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         if (activeSet != null) {
-            ResourceLocation id = ArmorSetCustomRegistry.getRegistry().getKey(activeSet);
+            ResourceLocation id = ArmorSetRegistry.getRegistry().getKey(activeSet);
             if (id != null) {
                 nbt.putString("activeSet", id.toString());
                 nbt.putString("state", activeSet.getState().name());
@@ -139,7 +139,7 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
         if (nbt.contains("activeSet")) {
             try {
                 ResourceLocation id = new ResourceLocation(nbt.getString("activeSet"));
-                this.activeSet = ArmorSetCustomRegistry.getRegistry().getValue(id);
+                this.activeSet = ArmorSetRegistry.getRegistry().getValue(id);
 
                 if (this.activeSet != null) {
                     try {
@@ -150,10 +150,10 @@ public class ArmorSetCapabilityHandler implements IArmorSetCapability {
                     this.activeSet.setSkillState(nbt.getString("skillState"));
                 }
             } catch (Exception e) {
-                this.activeSet = ArmorSetCustomRegistry.EMPTY_SET.get();
+                this.activeSet = ArmorSetRegistry.EMPTY_SET.get();
             }
         } else {
-            this.activeSet = ArmorSetCustomRegistry.EMPTY_SET.get();
+            this.activeSet = ArmorSetRegistry.EMPTY_SET.get();
         }
         updateItemSetMaps();
     }

@@ -2,7 +2,6 @@ package org.crychicteam.cibrary.content.armorset;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -12,12 +11,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.crychicteam.cibrary.api.registry.ArmorSetCustomRegistry;
+import org.crychicteam.cibrary.api.registry.ArmorSetRegistry;
 import org.crychicteam.cibrary.content.armorset.defaults.DefaultSetEffect;
 import org.crychicteam.cibrary.content.armorset.integration.CuriosIntegration;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Armor Set Class.
@@ -218,7 +216,7 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
     }
 
     public boolean is(TagKey<ArmorSet> key) {
-        var registry = ArmorSetCustomRegistry.getRegistry();
+        var registry = ArmorSetRegistry.getRegistry();
         if (registry == null) return false;
         var tags = registry.tags();
         if (tags == null) return false;
@@ -228,7 +226,7 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
 
     @SafeVarargs
     public final boolean is(TagKey<ArmorSet>... tags) {
-        var registry = ArmorSetCustomRegistry.getRegistry();
+        var registry = ArmorSetRegistry.getRegistry();
         if (registry == null) return false;
         var regTags = registry.tags();
         if (regTags == null) return false;
@@ -260,12 +258,12 @@ public class ArmorSet implements IArmorSetUpdater, IArmorSetAttackHandler, IArmo
             if (equippedItem.isEmpty() || !entry.getValue().contains(equippedItem.getItem())) {
                 return false;
             }
-            Set<ArmorSet> possibleSets = ArmorSetCustomRegistry.getItemToSetIndex().get(equippedItem.getItem());
+            Set<ArmorSet> possibleSets = ArmorSetRegistry.getItemToSetIndex().get(equippedItem.getItem());
             return possibleSets != null && possibleSets.contains(this);
         }
         if (!curioItems.isEmpty()) {
             Map.Entry<Item, Integer> firstCurio = curioItems.entrySet().iterator().next();
-            Set<ArmorSet> possibleSets = ArmorSetCustomRegistry.getItemToSetIndex().get(firstCurio.getKey());
+            Set<ArmorSet> possibleSets = ArmorSetRegistry.getItemToSetIndex().get(firstCurio.getKey());
             return possibleSets != null && possibleSets.contains(this);
         }
         return true;

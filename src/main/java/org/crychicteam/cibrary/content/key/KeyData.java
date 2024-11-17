@@ -43,7 +43,6 @@ public class KeyData {
         IDLE,
         PRESSED,
         CHARGING,
-        RELEASED,
-        DOUBLE_CLICKED
+        RELEASED
     }
 }

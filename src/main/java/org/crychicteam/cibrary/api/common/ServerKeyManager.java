@@ -46,17 +46,6 @@ public class ServerKeyManager {
     }
 
     /**
-     * Checks if the specified key for the player was double-clicked.
-     *
-     * @param player The player to check.
-     * @param keyId The key identifier.
-     * @return True if the key was double-clicked, false otherwise.
-     */
-    public static boolean isDoubleClicked(ServerPlayer player, ResourceLocation keyId) {
-        return getKeyState(player, keyId) == KeyData.KeyState.DOUBLE_CLICKED;
-    }
-
-    /**
      * Retrieves the power level of a charging key for the player.
      *
      * @param player The player to check.

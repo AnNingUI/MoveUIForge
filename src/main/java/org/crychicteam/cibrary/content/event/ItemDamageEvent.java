@@ -8,13 +8,13 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.function.Consumer;
 
 @Cancelable
-public class ItemDamageEvent extends Event {
+public class ItemDamageEvent<T extends LivingEntity> extends Event {
     private final ItemStack itemStack;
     private int damage;
-    private final LivingEntity entity;
-    private final Consumer<LivingEntity> onBroken;
+    private final T entity;
+    private final Consumer<T> onBroken;
 
-    public ItemDamageEvent(ItemStack itemStack, int damage, LivingEntity entity, Consumer<LivingEntity> onBroken) {
+    public ItemDamageEvent(ItemStack itemStack, int damage, T entity, Consumer<T> onBroken) {
         this.itemStack = itemStack;
         this.damage = damage;
         this.entity = entity;
@@ -33,11 +33,11 @@ public class ItemDamageEvent extends Event {
         this.damage = damage;
     }
 
-    public LivingEntity getEntity() {
+    public T getEntity() {
         return entity;
     }
 
-    public Consumer<LivingEntity> getOnBroken() {
+    public Consumer<T> getOnBroken() {
         return onBroken;
     }
 }
