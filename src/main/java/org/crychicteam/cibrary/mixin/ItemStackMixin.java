@@ -34,7 +34,8 @@ public abstract class ItemStackMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/item/Item;damageItem(Lnet/minecraft/world/item/ItemStack;ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)I"
-            )
+            ),
+            remap = false
     )
     private int cibrary$redirectDamageItem(Item item, ItemStack stack, int pAmount, LivingEntity pEntity, Consumer<LivingEntity> pOnBroken) {
         var event = new ItemDamageEvent(stack, pAmount, pEntity, pOnBroken);

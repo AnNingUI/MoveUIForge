@@ -176,12 +176,15 @@ public class ClientKeyHandler {
 
     /**
      * Updates key state based on current conditions and timing.
-     *
+     * <p>
      * State Machine Implementation:
+     * <p>
      * 1. Press Detection -> handleKeyPress()
+     * <p>
      * 2. Release Detection -> handleKeyRelease()
-     *
+     * <p>
      * Time Complexity: O(1)
+     * <p>
      * Space Complexity: O(1)
      */
     private static void updateKeyState(ResourceLocation keyId, KeyConfig config, KeyData keyData,
