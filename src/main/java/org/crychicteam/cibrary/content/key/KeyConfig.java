@@ -1,9 +1,9 @@
 package org.crychicteam.cibrary.content.key;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.settings.KeyConflictContext;
-import com.mojang.blaze3d.platform.InputConstants;
 
 public class KeyConfig {
     public final ResourceLocation id;

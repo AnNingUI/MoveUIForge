@@ -9,7 +9,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.crychicteam.cibrary.Cibrary;
 import org.crychicteam.cibrary.content.events.client.ClientKeyHandler;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class KeyRegistry {
     private static final Map<ResourceLocation, KeyConfig> REGISTERED_KEYS = new LinkedHashMap<>();
@@ -48,21 +51,21 @@ public class KeyRegistry {
     }
 
     private static void onKeyMappingRegister(RegisterKeyMappingsEvent event) {
-        KeyMapping[] existingMappings = Minecraft.getInstance().options.keyMappings;
+            KeyMapping[] existingMappings = Minecraft.getInstance().options.keyMappings;
 
-        for (KeyConfig config : REGISTERED_KEYS.values()) {
-            boolean alreadyExists = false;
-            for (KeyMapping existing : existingMappings) {
-                if (existing.getName().equals(config.keyMapping.getName())) {
-                    alreadyExists = true;
-                    Cibrary.LOGGER.debug("Skipping registration for existing key mapping: {}", config.id);
-                    break;
+            for (KeyConfig config : REGISTERED_KEYS.values()) {
+                boolean alreadyExists = false;
+                for (KeyMapping existing : existingMappings) {
+                    if (existing.getName().equals(config.keyMapping.getName())) {
+                        alreadyExists = true;
+                        Cibrary.LOGGER.debug("Skipping registration for existing key mapping: {}", config.id);
+                        break;
+                    }
                 }
-            }
-            if (!alreadyExists) {
-                event.register(config.keyMapping);
-                Cibrary.LOGGER.debug("Registered new key mapping for: {}", config.id);
-            }
+                if (!alreadyExists) {
+                    event.register(config.keyMapping);
+                    Cibrary.LOGGER.debug("Registered new key mapping for: {}", config.id);
+                }
         }
     }
 

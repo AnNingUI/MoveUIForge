@@ -8,6 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -44,12 +45,12 @@ public class Cibrary {
 		FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
 		IEventBus modEventBus = ctx.getModEventBus();
 		modEventBus.addListener(this::initializeKeySystem);
+		modEventBus.addListener(this::onClientSetup);
 
 		initializeRegistries(modEventBus);
 		registerEventListeners();
 		initializeArmorSets(modEventBus);
 		SkillKey.init();
-		DefaultKey.register();
 		ArmorSetRegistryExample.init();
 	}
 
@@ -78,5 +79,9 @@ public class Cibrary {
 
 	public void onCommonSetup(FMLCommonSetupEvent event) {
 		CibraryNetworkHandler.init();
+	}
+
+	public void onClientSetup(FMLClientSetupEvent event) {
+		DefaultKey.register();
 	}
 }
