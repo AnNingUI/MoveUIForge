@@ -5,6 +5,7 @@ import com.tterrag.registrate.Registrate;
 import dev.xkmc.l2damagetracker.contents.attack.AttackEventHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +45,7 @@ public class Cibrary {
 	public Cibrary() {
 		FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
 		IEventBus modEventBus = ctx.getModEventBus();
-		modEventBus.addListener(this::initializeKeySystem);
+		modEventBus.addListener(EventPriority.LOW, this::initializeKeySystem);
 		modEventBus.addListener(this::onClientSetup);
 
 		initializeRegistries(modEventBus);
@@ -73,7 +74,7 @@ public class Cibrary {
 		modEventBus.addListener(ArmorSetCapability::register);
 	}
 
-	private void initializeKeySystem(FMLConstructModEvent event) {
+	private void initializeKeySystem(FMLClientSetupEvent event) {
 		event.enqueueWork(KeyRegistry::init);
 	}
 
