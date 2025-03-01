@@ -1,6 +1,6 @@
 # Mod Info
 enable_annotation=false
-mod_version= 0.0.2
+mod_version= 0.0.3
 formal_version = true
 
 # Mod dependencies (jei is not a requirement, but HammerLib is)
