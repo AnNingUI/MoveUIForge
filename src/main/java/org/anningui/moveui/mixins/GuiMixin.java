@@ -1,8 +1,6 @@
 package org.anningui.moveui.mixins;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.anningui.moveui.Config;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 
-@Mixin(value = Gui.class, priority = -1)
+@Mixin(value = Gui.class)
 public class GuiMixin {
     @ModifyArg(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 1)
     private int modifyHotbarX(int value) {

@@ -3,7 +3,7 @@
  "priority": 800,
  "minVersion": "0.8",
  "package": "org.anningui.moveui.mixins",
- "refmap": "examplemod.refmap.json",
+ "refmap": "mixins.moveui.refmap.json",
  "compatibilityLevel": "JAVA_17",
  "mixins": [
  ],
