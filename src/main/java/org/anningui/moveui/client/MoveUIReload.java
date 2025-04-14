@@ -3,7 +3,7 @@ package org.anningui.moveui.client;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import org.anningui.moveui.MoveUIStone;
+import org.anningui.moveui.MoveUIStore;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -12,7 +12,7 @@ public class MoveUIReload implements ResourceManagerReloadListener {
 
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager pResourceManager) {
-        MoveUIStone.kjs$reload();
+        MoveUIStore.kjs$reload();
     }
 
     public static void init() {
