@@ -31,7 +31,8 @@ public class MoveUI
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, MoveUIReload::onReload);
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::onSetup);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+		var modConfig = ModLoadingContext.get();
+		modConfig.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
 		LOGGER.info("MoveUI Forge Mod Loaded.");
 	}
 
