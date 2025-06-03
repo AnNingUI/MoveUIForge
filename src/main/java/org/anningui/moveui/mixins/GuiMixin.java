@@ -40,6 +40,7 @@ public class GuiMixin {
         }
     }
 
+    // expBar
     @Redirect(method = "renderExperienceBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"))
     private void onRenderExpBar(GuiGraphics instance, ResourceLocation pAtlasLocation, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
         if (MoveUIStore.getExpNoRender()) {
@@ -48,12 +49,13 @@ public class GuiMixin {
         instance.blit(pAtlasLocation, pX + MoveUIStore.getExpX(), pY - MoveUIStore.getExpY(), pUOffset, pVOffset, pUWidth, pVHeight);
     }
 
+    // expLevel
     @Redirect(method = "renderExperienceBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I"))
     private int onRenderExpLevel(GuiGraphics instance, Font pFont, String pText, int pX, int pY, int pColor, boolean pDropShadow) {
         if (MoveUIStore.getExpDNoRender()) {
             return 0;
         }
-        return instance.drawString(pFont, pText, pX + MoveUIStore.getExpX(), pY - MoveUIStore.getExpY(), pColor, pDropShadow);
+        return instance.drawString(pFont, pText, pX + MoveUIStore.getExpDX(), pY - MoveUIStore.getExpDY(), pColor, pDropShadow);
     }
 
     @ModifyArg(method = "renderJumpMeter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), index = 1)
