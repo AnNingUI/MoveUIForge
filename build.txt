@@ -1,6 +1,6 @@
 # Mod Info
 enable_annotation=true
-mod_version= 0.0.7
+mod_version= 0.0.8
 formal_version = false
 
 # KubeJS Adder
