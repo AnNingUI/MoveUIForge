@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:maven.saps.dev)",
+      "Bash(curl:*)"
+    ]
+  }
+}

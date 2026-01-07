@@ -154,6 +154,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    mavenCentral()
     maven {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
@@ -164,6 +165,17 @@ repositories {
     maven {
         name = 'tterrag'
         url = 'https://maven.tterrag.com/'
+        content {
+            includeGroup "com.tterrag.registrate"
+        }
+    }
+    maven {
+        // MixinExtras and Mixin
+        url = "https://repo.spongepowered.org/repository/maven-public/"
+        content {
+            includeGroupByRegex "com\\.github\\.llamalad7.*"
+            includeGroup "org.spongepowered"
+        }
     }
     maven {
         name = 'GeckoLib'
@@ -193,10 +205,18 @@ repositories {
     }
 
     maven {
-        // saps.dev Maven (KubeJS and Rhino)
-        url = "https://maven.saps.dev/minecraft"
+        // latvian.dev Maven (KubeJS and Rhino) - NEW URL
+        url = "https://maven.latvian.dev/releases"
         content {
             includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
         }
     }
 
