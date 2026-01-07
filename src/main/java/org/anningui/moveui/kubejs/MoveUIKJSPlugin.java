@@ -1,6 +1,7 @@
 package org.anningui.moveui.kubejs;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import org.anningui.moveui.MoveUIStore;
 import org.jetbrains.annotations.NotNull;

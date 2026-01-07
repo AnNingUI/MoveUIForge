@@ -8,8 +8,9 @@
   "mixins": [
   ],
   "client": [
-    "GuiMixin",
-    "ForgeGuiMixin"
+    "BossHealthOverlayMixin",
+    "ForgeGuiMixin",
+    "GuiMixin"
   ],
   "server": [
   ]

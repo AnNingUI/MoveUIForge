@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ForgeGui.class)
@@ -99,6 +98,30 @@ public abstract class ForgeGuiMixin extends Gui {
         }
     }
 
+    @ModifyArg(
+            method = "renderAir",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"),
+            index = 1
+    )
+    private int modifyAirX(int x) {
+        return x + MoveUIStore.getAirX();
+    }
+
+    @ModifyArg(
+            method = "renderAir",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"),
+            index = 2
+    )
+    private int modifyAirY(int y) {
+        return y - MoveUIStore.getAirY();
+    }
+
+    @Inject(method = "renderAir", at = @At(value = "HEAD"), cancellable = true, remap = false)
+    private void onRenderAir(int width, int height, GuiGraphics guiGraphics, CallbackInfo ci) {
+        if (MoveUIStore.getAirNoRender()) {
+            ci.cancel();
+        }
+    }
 
     @Override
     public void renderSelectedItemName(@NotNull GuiGraphics pGuiGraphics, int yShift) {
@@ -141,5 +164,32 @@ public abstract class ForgeGuiMixin extends Gui {
         }
 
         this.minecraft.getProfiler().pop();
+    }
+
+
+
+    @ModifyArg(
+            method = "renderHealthMount",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"),
+            index = 1
+    )
+    private int modifyMountHealthX(int x) {
+        return x + MoveUIStore.getMountHealthX();
+    }
+
+    @ModifyArg(
+            method = "renderHealthMount",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"),
+            index = 2
+    )
+    private int modifyMountHealthY(int y) {
+        return y - MoveUIStore.getMountHealthY();
+    }
+
+    @Inject(method = "renderHealthMount", at = @At(value = "HEAD"), cancellable = true, remap = false)
+    private void onRenderMountHealth(int width, int height, GuiGraphics guiGraphics, CallbackInfo ci) {
+        if (MoveUIStore.getMountHealthNoRender()) {
+            ci.cancel();
+        }
     }
 }
